@@ -18,9 +18,24 @@ import (
 	"github.com/Tormak9970/node-extract/reader/hash"
 	"github.com/Tormak9970/node-extract/reader/tor"
 	"github.com/gammazero/workerpool"
+	"github.com/klauspost/compress/zstd"
 )
 
 //* build command: go build -o nodeExtraction.exe main.go
+
+func zstdDecompress(buff []byte) ([]byte, error) {
+	r, err := zstd.NewReader(bytes.NewReader(buff))
+	if err != nil {
+		fmt.Print(err)
+		return nil, err
+	}
+	defer r.Close()
+
+	var out bytes.Buffer
+	io.Copy(&out, r)
+
+	return out.Bytes(), nil
+}
 
 func zlipDecompress(buff []byte) ([]byte, error) {
 	b := bytes.NewReader(buff)
@@ -174,7 +189,7 @@ func main() {
 						_, err := f.Read(buff)
 						logger.Check(err)
 
-						fileData, err2 := zlipDecompress(buff)
+						fileData, err2 := zstdDecompress(buff)
 						logger.Check(err2)
 
 						writeFile(fileData, outputName, outputDir)
