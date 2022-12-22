@@ -37,7 +37,7 @@ func zstdDecompress(buff []byte) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-func zlipDecompress(buff []byte) ([]byte, error) {
+func zlibDecompress(buff []byte) ([]byte, error) {
 	b := bytes.NewReader(buff)
 	r, err := zlib.NewReader(b)
 
@@ -189,7 +189,7 @@ func main() {
 						_, err := f.Read(buff)
 						logger.Check(err)
 
-						fileData, err2 := zstdDecompress(buff)
+						fileData, err2 := zlibDecompress(buff)
 						logger.Check(err2)
 
 						writeFile(fileData, outputName, outputDir)
